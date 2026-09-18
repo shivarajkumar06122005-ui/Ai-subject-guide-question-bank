@@ -1,9 +1,11 @@
-from fastapi import FastAPI
-from dotenv import load_dotenv
+from pathlib import Path
 import os
 
-from backend.app.models.chunk_model import DocumentChunk
+from fastapi import FastAPI
+from dotenv import load_dotenv
+
 from backend.app.models.question_model import QuestionRequest, QuestionResponse
+from backend.app.services.document_loader_service import load_document
 from backend.app.services.rag_service import answer_question_with_citations
 
 load_dotenv()
@@ -32,30 +34,13 @@ def health_check():
 
 @app.post("/api/v1/question", response_model=QuestionResponse)
 def ask_question(request: QuestionRequest):
-    chunks = [
-        DocumentChunk(
-            text="Python is a high-level programming language used for software development and data analysis.",
-            source="python_notes.pdf",
-            chunk_index=0,
-            page_number=1
-        ),
-        DocumentChunk(
-            text="SQL is used to manage and query relational databases.",
-            source="sql_notes.pdf",
-            chunk_index=1,
-            page_number=2
-        ),
-        DocumentChunk(
-            text="Photosynthesis is the process by which plants produce food using sunlight.",
-            source="biology_notes.pdf",
-            chunk_index=2,
-            page_number=3
-        )
-    ]
+    pdf_path = Path(__file__).resolve().parents[2] / "backend" / "tests" / "simple.pdf"
+
+    document = load_document(str(pdf_path))
 
     result = answer_question_with_citations(
         request.question,
-        chunks,
+        document.chunks,
         top_k=request.top_k
     )
 
