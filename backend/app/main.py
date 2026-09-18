@@ -4,7 +4,7 @@ import os
 
 from backend.app.models.chunk_model import DocumentChunk
 from backend.app.models.question_model import QuestionRequest, QuestionResponse
-from backend.app.services.rag_service import answer_question
+from backend.app.services.rag_service import answer_question_with_citations
 
 load_dotenv()
 
@@ -53,7 +53,7 @@ def ask_question(request: QuestionRequest):
         )
     ]
 
-    answer = answer_question(
+    result = answer_question_with_citations(
         request.question,
         chunks,
         top_k=request.top_k
@@ -61,5 +61,6 @@ def ask_question(request: QuestionRequest):
 
     return QuestionResponse(
         question=request.question,
-        answer=answer
+        answer=result.answer,
+        citations=result.citations
     )
