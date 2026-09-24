@@ -1,5 +1,8 @@
 from ollama import chat
 
+from backend.app.services.prompt_engine_service import build_system_prompt
+from backend.app.services.intent_detection_service import detect_intent
+
 
 GENERATION_MODEL = "qwen3:0.6b"
 
@@ -11,17 +14,24 @@ def generate_answer(
     if not question.strip():
         return ""
 
-    prompt = f"""
-You are an AI Subject Guide.
+    intent = detect_intent(question)
+    system_prompt = build_system_prompt(intent=intent)
 
-Answer the student's question using only the provided context.
+    user_prompt = f"""
+GROUNDING REQUIREMENT:
+For grounded_qa, the answer must contain ONLY information explicitly present in the Retrieved Study Material.
 
-If the answer cannot be found in the context, say:
+STRICT RULES:
+- Do not add any information from your own knowledge.
+- Do not create or modify examples.
+- Do not add explanations that are not written in the Retrieved Study Material.
+- Do not infer missing information.
+- Do not expand abbreviations or concepts.
+- Prefer copying the relevant sentence or sentences directly from the Retrieved Study Material.
+- If the Retrieved Study Material does not directly answer the question, respond exactly:
 "I could not find this information in the provided study material."
 
-Do not invent information.
-
-Context:
+Retrieved Study Material:
 {context}
 
 Student Question:
@@ -31,13 +41,21 @@ Answer:
 """
 
     response = chat(
-        model=GENERATION_MODEL,
+    model=GENERATION_MODEL,
+    options={"temperature": 0},
         messages=[
             {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
                 "role": "user",
-                "content": prompt
+                "content": user_prompt
             }
         ]
     )
 
     return response["message"]["content"].strip()
+
+
+
