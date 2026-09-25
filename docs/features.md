@@ -13,23 +13,35 @@ Students can upload multiple academic materials such as:
 
 The uploaded materials are processed and prepared for semantic retrieval.
 
-### 1.2 RAG-Based Question Answering
+### 1.2 Document Management
+
+Implemented document management supports:
+
+- Uploaded document listing
+- Filename, page count, and chunk count
+- Document processing status
+- Multiple uploaded documents in the RAG store
+- Document deletion
+- Removal of deleted document chunks from the active RAG store
+- Multi-document retrieval with source and page citations
+
+### 1.3 RAG-Based Question Answering
 
 Students can ask questions about their uploaded study materials.
 
 The RAG pipeline retrieves relevant academic content before generating the answer.
 
-### 1.3 Source and Page Citations
+### 1.4 Source and Page Citations
 
 AI responses should provide the source document and page information when available.
 
 This helps students verify the generated answer against their original study material.
 
-### 1.4 AI Subject Guide
+### 1.5 AI Subject Guide
 
 The system acts as an interactive subject guide that explains concepts using the student's available academic materials.
 
-### 1.5 Question Bank Generator
+### 1.6 Question Bank Generator
 
 The system can generate practice questions from uploaded academic content.
 
@@ -41,7 +53,7 @@ Questions can be organized by:
 - Difficulty
 - Marks
 
-### 1.6 Previous-Year Question Analysis
+### 1.7 Previous-Year Question Analysis
 
 Previous-year question papers can be analyzed to identify:
 
@@ -51,11 +63,11 @@ Previous-year question papers can be analyzed to identify:
 - Repeated questions
 - Topic-wise distribution
 
-### 1.7 AI Quiz and Mock Test Generator
+### 1.8 AI Quiz and Mock Test Generator
 
 The system can generate quizzes and mock tests from the student's study materials.
 
-### 1.8 Exam Mode
+### 1.9 Exam Mode
 
 Answers can be generated according to examination requirements, including:
 
@@ -63,11 +75,11 @@ Answers can be generated according to examination requirements, including:
 - 5-mark answers
 - 10-mark answers
 
-### 1.9 Weak Topic Detection
+### 1.10 Weak Topic Detection
 
 The system can identify topics where a student performs poorly based on quiz and practice results.
 
-### 1.10 Personalized Study Planner
+### 1.11 Personalized Study Planner
 
 The system can generate study recommendations based on:
 
@@ -213,3 +225,5 @@ Personalized Recommendation
 Practice / Revision
        ↓
 Progress Update
+
+

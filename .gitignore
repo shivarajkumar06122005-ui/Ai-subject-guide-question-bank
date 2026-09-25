@@ -23,3 +23,12 @@ Thumbs.db
 
 # Logs
 *.log
+# Generated uploads
+uploads/
+
+# Local test PDFs
+backend/tests/*.pdf
+backend/tests/*.txt
+
+# Local backup files
+*.backup.*

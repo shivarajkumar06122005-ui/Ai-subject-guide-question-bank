@@ -102,3 +102,32 @@ def process_pdf(file_path: str) -> DocumentResult:
         total_chunks=len(document_chunks),
         chunks=document_chunks
     )
+def list_uploaded_documents(upload_dir: str) -> list[dict]:
+    directory = Path(upload_dir)
+
+    if not directory.exists():
+        return []
+
+    documents = []
+
+    for file_path in sorted(directory.glob("*.pdf")):
+        try:
+            reader = PdfReader(file_path)
+            page_count = len(reader.pages)
+            result = process_pdf(str(file_path))
+
+            documents.append({
+                "filename": file_path.name,
+                "pages": page_count,
+                "chunks": result.total_chunks,
+                "status": "READY"
+            })
+        except Exception:
+            documents.append({
+                "filename": file_path.name,
+                "pages": 0,
+                "chunks": 0,
+                "status": "ERROR"
+            })
+
+    return documents
