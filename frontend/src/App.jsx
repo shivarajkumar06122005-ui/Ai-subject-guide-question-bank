@@ -743,6 +743,7 @@ function App() {
   const [showWorkspace, setShowWorkspace] = useState(false);
   const [activePage, setActivePage] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLightMode, setIsLightMode] = useState(false);
 
   if (!showWorkspace) {
     return <LandingPage onEnterWorkspace={() => setShowWorkspace(true)} />;
@@ -772,7 +773,7 @@ function App() {
   };
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${isLightMode ? "light-mode" : ""}`}>
 
       <button
   className="workspace-menu-toggle"
@@ -829,6 +830,7 @@ function App() {
           </div>
 
           <div className="topbar-user">
+            <button className="theme-toggle" onClick={() => setIsLightMode(prev => !prev)} aria-label="Toggle theme"><span className="theme-icon"></span></button>
             <span className="grounded-badge">GROUNDED</span>
             <div className="avatar">SK</div>
           </div>
@@ -841,6 +843,18 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
