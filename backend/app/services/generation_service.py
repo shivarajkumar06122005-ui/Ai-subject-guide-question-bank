@@ -24,10 +24,10 @@ For grounded_qa, the answer must contain ONLY information explicitly present in 
 STRICT RULES:
 - Do not add any information from your own knowledge.
 - Do not create or modify examples.
-- Do not add explanations that are not written in the Retrieved Study Material.
+- Do not introduce facts, examples, or concepts that are absent from the Retrieved Study Material. You may combine and clearly explain information that is present in the material.
 - Do not infer missing information.
 - Do not expand abbreviations or concepts.
-- Prefer copying the relevant sentence or sentences directly from the Retrieved Study Material.
+- Use only facts and concepts supported by the Retrieved Study Material, but organize and explain those facts in your own words when needed to match the requested examination format.
 - If the Retrieved Study Material does not directly answer the question, respond exactly:
 "I could not find this information in the provided study material."
 
