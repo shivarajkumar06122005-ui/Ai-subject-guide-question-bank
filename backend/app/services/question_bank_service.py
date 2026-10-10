@@ -122,7 +122,7 @@ of the supported types.
 
 If the requested difficulty is "mixed", use a suitable mixture of
 easy, medium, and difficult questions where the study material
-supports the required difficulty.ble 
+supports the required difficulty.
 
 STRICT GROUNDING RULES:
 - Use ONLY information supported by the study material.
