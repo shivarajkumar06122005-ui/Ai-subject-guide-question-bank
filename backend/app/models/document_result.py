@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from backend.app.models.chunk_model import DocumentChunk
+from app.models.chunk_model import DocumentChunk
 
 
 @dataclass

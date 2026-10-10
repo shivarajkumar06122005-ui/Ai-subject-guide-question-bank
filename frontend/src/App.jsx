@@ -1,16 +1,22 @@
 import { useState, useRef, useEffect } from "react";
+import { supabase } from "./supabaseClient";
 import "./App.css";
 import LandingPage from "./LandingPage";
+import VerifiedReasoningPage from "./pages/VerifiedReasoningPage";
+import SyntheticPeerClassroomPage from "./pages/SyntheticPeerClassroomPage";
 
 const menuItems = [
-  { id: "overview", label: "Overview", icon: "O" },
-  { id: "guide", label: "AI Subject Guide", icon: "AI" },
-  { id: "documents", label: "Documents", icon: "PDF" },
-  { id: "questions", label: "Question Bank", icon: "Q" },
-  { id: "pyq", label: "PYQ Analysis", icon: "PYQ" },
+  { id: "overview", label: "Overview", icon: "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡" },
+  { id: "guide", label: "AI Subject Guide", icon: "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦" },
+  { id: "virtual-teacher", label: "Virtual Teacher", icon: "VT" },
+  { id: "documents", label: "Documents", icon: "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£" },
+  { id: "questions", label: "Question Bank", icon: "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·" },
+  { id: "pyq", label: "PYQ Analysis", icon: "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â " },
   { id: "quiz", label: "Quiz", icon: "?" },
-  { id: "exam", label: "Exam Mode", icon: "EX" },
-  { id: "planner", label: "Study Planner", icon: "PL" },
+  { id: "exam", label: "Exam Mode", icon: "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°" },
+  { id: "planner", label: "Study Planner", icon: "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â«" },
+  { id: "verified-reasoning", label: "Verified Reasoning", icon: "VR" },
+  { id: "synthetic-peer", label: "Synthetic Peer Classroom", icon: "F3" },
 ];
 
 function Overview({ setActivePage }) {
@@ -80,32 +86,35 @@ function Overview({ setActivePage }) {
 
           <h2>How Subject Guide AI thinks</h2>
 
-          <p className="muted">
-            Your question moves through a grounded learning pipeline before
-            the answer reaches you.
-          </p>
+<p className="muted">
+  Your question moves through a grounded learning pipeline before
+  the answer reaches you.
+</p>
 
-          <div className="pipeline">
-            <PipelineStep number="01" title="QUESTION" />
-            <span className="pipeline-arrow">-&gt;</span>
-            <PipelineStep number="02" title="RETRIEVE" />
-            <span className="pipeline-arrow">-&gt;</span>
-            <PipelineStep number="03" title="GENERATE" />
-            <span className="pipeline-arrow">-&gt;</span>
-            <PipelineStep number="04" title="CITE" />
-          </div>
+<div className="pipeline">
+  <PipelineStep number="01" title="QUESTION" />
+  <span className="pipeline-arrow">Ã¢â€ â€™</span>
 
-          <div className="grounding-box">
-            <div className="grounding-icon">G</div>
-            <div>
-              <strong>Grounding verification</strong>
-              <span>
-                Answers are checked against retrieved study material.
-              </span>
-            </div>
-          </div>
-        </div>
+  <PipelineStep number="02" title="RETRIEVE" />
+  <span className="pipeline-arrow">Ã¢â€ â€™</span>
 
+  <PipelineStep number="03" title="GENERATE" />
+  <span className="pipeline-arrow">Ã¢â€ â€™</span>
+
+  <PipelineStep number="04" title="CITE" />
+</div>
+
+<div className="grounding-box">
+  <div className="grounding-icon">G</div>
+
+  <div>
+    <strong>Grounding verification</strong>
+    <span>
+      Answers are checked against retrieved study material.
+    </span>
+  </div>
+</div>
+</div>
         <div className="workspace-card study-card">
           <div className="card-top">
             <span className="eyebrow">CONTINUE LEARNING</span>
@@ -125,6 +134,63 @@ function Overview({ setActivePage }) {
           >
             Continue topic
           </button>
+        </div>
+           </section>
+
+      <section
+        className="workspace-card"
+        style={{
+          marginTop: "24px",
+          padding: "28px",
+          overflow: "hidden",
+        }}
+      >
+        <div className="card-top">
+          <span className="eyebrow">AI TEACHING VIDEO</span>
+          <span className="live-dot">READY</span>
+        </div>
+
+        <h2>Binary Search Ã¢â‚¬â€ AI Lesson</h2>
+
+        <p className="muted">
+          Watch the generated 2D educational lesson with AI teacher narration.
+        </p>
+
+        <div
+          style={{
+            marginTop: "22px",
+            borderRadius: "18px",
+            overflow: "hidden",
+            background: "#05070b",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <video
+            controls
+            preload="metadata"
+            style={{
+              width: "100%",
+              display: "block",
+              maxHeight: "620px",
+              background: "#05070b",
+            }}
+            src="http://127.0.0.1:8000/api/v1/teaching-video/video/binary_search_2d_full.mp4"
+          >
+            Your browser does not support video playback.
+          </video>
+        </div>
+
+        <div
+          style={{
+            marginTop: "16px",
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap",
+          }}
+        >
+          <span className="question-type">2D ANIMATION</span>
+          <span className="question-type">GEMINI AI VOICE</span>
+          <span className="question-type">GROUNDED LEARNING</span>
         </div>
       </section>
     </>
@@ -325,7 +391,7 @@ function GuidePage() {
               onClick={askAI}
               disabled={loading || !question.trim()}
             >
-              {loading ? "Thinking..." : "Ask AI"}
+              {loading ? "Thinking..." : "Ask AI Ã¢â€ â€™"}
             </button>
           </div>
 
@@ -377,50 +443,26 @@ function DocumentsPage() {
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const [documents, setDocuments] = useState([]);
-  const loadDocuments = async () => {
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/v1/documents"
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to load documents");
-      }
-
-      setDocuments(data.documents || []);
-    } catch (error) {
-      console.error("Failed to load documents:", error);
-    }
-  };
-
-  useEffect(() => {
-    loadDocuments();
-  }, []);
-
-  const handleDeleteDocument = async (filename) => {
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/documents/${encodeURIComponent(filename)}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Delete failed");
-      }
-
-      await loadDocuments();
-    } catch (error) {
-      console.error("Document delete failed:", error);
-      alert("Document delete failed.");
-    }
-  };
+  const documents = [
+    {
+      name: "Database Management Notes.pdf",
+      type: "NOTES",
+      pages: "48 pages",
+      status: "READY",
+    },
+    {
+      name: "DBMS Previous Year Questions.pdf",
+      type: "PYQ",
+      pages: "32 pages",
+      status: "READY",
+    },
+    {
+      name: "Machine Learning Unit 1.pdf",
+      type: "NOTES",
+      pages: "26 pages",
+      status: "READY",
+    },
+  ];
 
  const handleFileSelect = async (event) => {
   const file = event.target.files?.[0];
@@ -448,7 +490,6 @@ function DocumentsPage() {
     }
 
     console.log("PDF uploaded successfully:", data);
-    await loadDocuments();
   } catch (error) {
     console.error("PDF upload failed:", error);
     alert("PDF upload failed. Make sure the backend is running.");
@@ -501,7 +542,9 @@ function DocumentsPage() {
             onChange={handleFileSelect}
           />
 
-            <span className="upload-hint">PDF - MAX 20 MB</span>
+            <span className="upload-hint">
+              PDF ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· MAX 20 MB
+            </span>
           </div>
 
 
@@ -539,11 +582,11 @@ function DocumentsPage() {
               </div>
 
               <div className="document-info">
-                <strong>{document.filename}</strong>
+                <strong>{document.name}</strong>
 
                 <div className="document-meta">
-        
-                  <span>{document.pages} pages</span><span>{document.chunks} chunks</span>
+                  <span>{document.type}</span>
+                  <span>{document.pages}</span>
                   <span>Indexed</span>
                 </div>
               </div>
@@ -553,8 +596,8 @@ function DocumentsPage() {
                 {document.status}
               </div>
 
-              <button className="document-action" onClick={() => handleDeleteDocument(document.filename)}>
-                <span>DELETE</span>
+              <button className="document-action">
+                <span>OPEN</span>
               </button>
 
             </div>
@@ -571,7 +614,7 @@ function DocumentRow({ name, pages }) {
     <div className="document-row">
       <div>
         <strong>{name}</strong>
-        <span>{pages} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Indexed for retrieval</span>
+        <span>{pages} Indexed for retrieval</span>
       </div>
       <span className="document-status">READY</span>
     </div>
@@ -579,21 +622,1061 @@ function DocumentRow({ name, pages }) {
 }
 
 function QuestionsPage() {
+  const [topic, setTopic] = useState("");
+  const [questionCount, setQuestionCount] = useState(5);
+  const [difficulty, setDifficulty] = useState("mixed");
+  const [questionType, setQuestionType] = useState("mixed");
+  const [studyText, setStudyText] = useState("");
+  const [currentKnowledge, setCurrentKnowledge] = useState("");
+  const [teacherQuestion, setTeacherQuestion] = useState("");
+  const [voiceTeacherScript, setVoiceTeacherScript] =
+  useState("");
+  const [voiceTeacherAudio, setVoiceTeacherAudio] =
+  useState("");
+  const [voiceTeacherLoading, setVoiceTeacherLoading] =
+  useState(false);
+  const [studentLevel, setStudentLevel] = useState("");
+  const [teacherAnswer, setTeacherAnswer] = useState("");
+  const [teacherLoading, setTeacherLoading] = useState(false);
+  const [visualLearning, setVisualLearning] = useState("");
+  const [visualLearningLoading, setVisualLearningLoading] = useState(false);
+  const [visualContent, setVisualContent] = useState("");
+  const [visualContentLoading, setVisualContentLoading] = useState(false);
+  const [whiteboard, setWhiteboard] = useState("");
+  const [whiteboardLoading, setWhiteboardLoading] = useState(false);
+  const [videoPlan, setVideoPlan] = useState("");
+  const [videoFile, setVideoFile] = useState("");
+  const [videoPlanLoading, setVideoPlanLoading] = useState(false);
+  const [videoElapsedSeconds, setVideoElapsedSeconds] = useState(0);
+
+  useEffect(() => {
+    if (!videoPlanLoading) {
+      setVideoElapsedSeconds(0);
+      return;
+    }
+
+    const startedAt = Date.now();
+    const timer = setInterval(() => {
+      setVideoElapsedSeconds(
+        Math.floor((Date.now() - startedAt) / 1000)
+      );
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [videoPlanLoading]);
+  const [questionBank, setQuestionBank] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [practiceMode, setPracticeMode] = useState(false);
+  const [studentAnswers, setStudentAnswers] = useState("");
+  const [assessmentReport, setAssessmentReport] = useState("");
+  const [assessmentLoading, setAssessmentLoading] = useState(false);
+  const [adaptiveReport, setAdaptiveReport] = useState("");
+  const [adaptiveLoading, setAdaptiveLoading] = useState(false);
+  const [studyGuide, setStudyGuide] = useState("");
+  const [studyGuideLoading, setStudyGuideLoading] = useState(false);
+  const [prerequisiteReport, setPrerequisiteReport] = useState("");
+  const [prerequisiteLoading, setPrerequisiteLoading] = useState(false);
+
+
+
+
+  async function generateQuestions() {
+    if (!topic.trim()) {
+      setMessage("Enter a topic first.");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+    setQuestionBank("");
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/v1/question-bank",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: topic.trim(),
+            question_count: Number(questionCount),
+            difficulty,
+            question_type: questionType,
+            study_text: studyText.trim(),
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || "Failed to generate question bank."
+        );
+      }
+
+      setQuestionBank(data.question_bank || "");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+async function submitAssessment() {
+  if (!studentAnswers.trim()) {
+    setMessage("Enter your answers first.");
+    return;
+  }
+
+  setAssessmentLoading(true);
+  setMessage("");
+  setAssessmentReport("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/assessment",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          question_bank: questionBank,
+          student_answers: studentAnswers.trim(),
+          study_text: studyText.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to assess your answers."
+      );
+    }
+
+    setAssessmentReport(data.assessment_report || "");
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setAssessmentLoading(false);
+  }
+}
+
+async function generateAdaptiveLearning() {
+  if (!assessmentReport.trim()) {
+    setMessage("Complete the assessment first.");
+    return;
+  }
+
+  setAdaptiveLoading(true);
+  setMessage("");
+  setAdaptiveReport("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/adaptive-learning",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          assessment_report: assessmentReport,
+          current_knowledge: "",
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail ||
+          "Failed to generate adaptive learning plan."
+      );
+    }
+
+    setAdaptiveReport(
+      data.adaptive_learning_report || ""
+    );
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setAdaptiveLoading(false);
+  }
+}
+
+async function generateStudyGuide() {
+  if (!adaptiveReport.trim()) {
+    setMessage("Generate the adaptive learning plan first.");
+    return;
+  }
+
+  setStudyGuideLoading(true);
+  setMessage("");
+  setStudyGuide("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/study-guide",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          context: studyText.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to generate study guide."
+      );
+    }
+
+    setStudyGuide(
+  data.study_guide ||
+  "Study Guide response was received, but no study guide content was returned."
+);
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setStudyGuideLoading(false);
+  }
+}
+
+async function generatePrerequisites() {
+  if (!topic.trim()) {
+    setMessage("Enter a topic first.");
+    return;
+  }
+
+  setPrerequisiteLoading(true);
+  setMessage("");
+  setPrerequisiteReport("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/prerequisite",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          goal: topic.trim(),
+          current_knowledge: currentKnowledge.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to analyze prerequisites."
+      );
+    }
+
+    setPrerequisiteReport(
+      data.prerequisites ||
+      "Prerequisite analysis was received, but no content was returned."
+    );
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setPrerequisiteLoading(false);
+  }
+}
+
+async function generateVoiceTeacher() {
+  const voiceTopic = topic.trim();
+
+  if (!voiceTopic) {
+    setMessage("Enter a topic first.");
+    return;
+  }
+
+  setVoiceTeacherLoading(true);
+  setMessage("");
+  setVoiceTeacherScript("");
+  setVoiceTeacherAudio("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/voice-teacher",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: voiceTopic,
+          student_level: studentLevel.trim(),
+          learning_goal: teacherQuestion.trim(),
+          lesson_context:
+            whiteboard.trim() ||
+            visualLearning.trim(),
+          study_text: studyText.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to generate Voice Teacher content."
+      );
+    }
+
+    setVoiceTeacherScript(
+      data.voice_script ||
+      "Voice Teacher response was received, but no script was returned."
+    );
+
+    if (data.audio_file) {
+      setVoiceTeacherAudio(
+        `http://127.0.0.1:8000${data.audio_file}`
+      );
+    }
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setVoiceTeacherLoading(false);
+  }
+}
+
+async function askAITeacher() {
+  if (!teacherQuestion.trim()) {
+    setMessage("Enter a question for the AI Teacher.");
+    return;
+  }
+
+  setTeacherLoading(true);
+  setMessage("");
+  setTeacherAnswer("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/teacher",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: teacherQuestion.trim(),
+          lesson_context: studyText.trim(),
+          student_level: studentLevel.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to get AI Teacher response."
+      );
+    }
+
+    setTeacherAnswer(
+      data.answer ||
+      "AI Teacher response was received, but no answer was returned."
+    );
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setTeacherLoading(false);
+  }
+}
+
+async function generateVisualLearning() {
+  if (!topic.trim()) {
+    setMessage("Enter a topic first.");
+    return;
+  }
+
+  setVisualLearningLoading(true);
+  setMessage("");
+  setVisualLearning("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/visual-learning",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          student_level: studentLevel.trim(),
+          learning_goal: teacherQuestion.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to generate visual learning content."
+      );
+    }
+
+    setVisualLearning(
+      data.visual_learning ||
+      "Visual Learning response was received, but no content was returned."
+    );
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setVisualLearningLoading(false);
+  }
+}
+
+async function generateVisualContent() {
+  if (!topic.trim()) {
+    setMessage("Enter a topic first.");
+    return;
+  }
+
+  if (!visualLearning.trim()) {
+    setMessage("Generate Visual Learning first.");
+    return;
+  }
+
+  setVisualContentLoading(true);
+  setMessage("");
+  setVisualContent("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/visual-content",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          visual_learning_spec: visualLearning.trim(),
+          student_level: studentLevel.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to generate visual content."
+      );
+    }
+
+    setVisualContent(
+      data.visual_content ||
+      "Visual Content response was received, but no content was returned."
+    );
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setVisualContentLoading(false);
+  }
+}
+
+async function generateWhiteboard() {
+  if (!topic.trim()) {
+    setMessage("Enter a topic first.");
+    return;
+  }
+
+  setWhiteboardLoading(true);
+  setMessage("");
+  setWhiteboard("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/whiteboard",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          student_level: studentLevel.trim(),
+          lesson_context: visualLearning.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to generate AI Whiteboard content."
+      );
+    }
+
+    setWhiteboard(
+      data.whiteboard ||
+      "AI Whiteboard response was received, but no content was returned."
+    );
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setWhiteboardLoading(false);
+  }
+}
+
+async function generateTeachingVideo() {
+  const videoTopic = topic.trim();
+
+  if (!videoTopic) {
+    setMessage("Enter a topic first.");
+    return;
+  }
+
+  setVideoPlanLoading(true);
+  setMessage("");
+  setVideoPlan("");
+  setVideoFile("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/teaching-video",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: videoTopic,
+          student_level: studentLevel.trim(),
+          lesson_context:
+            whiteboard.trim() || visualLearning.trim(),
+          learning_goal: teacherQuestion.trim(),
+          study_text: studyText.trim(),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to generate teaching video."
+      );
+    }
+
+    setVideoPlan(
+      data.video_plan ||
+      "Teaching Video plan was generated, but no plan was returned."
+    );
+
+    if (data.video_file) {
+      setVideoFile(
+        `http://127.0.0.1:8000${data.video_file}?t=${Date.now()}`
+      );
+    } else {
+      setMessage(
+        "Teaching plan was generated, but the backend did not return a video file."
+      );
+    }
+
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setVideoPlanLoading(false);
+  }
+}
+  function renderQuestionBank(text) {
+    if (!text.trim()) {
+      return null;
+    }
+
+    const blocks = text
+      .split(/\n\s*(?=\d+\.\s*(?:Question|Q))/i)
+      .map((block) => block.trim())
+      .filter(Boolean);
+
+    return blocks.map((block, index) => (
+      <div className="generated-question" key={index}>
+        <div className="generated-question-number">
+          Q{index + 1}
+        </div>
+
+        <div className="generated-question-content">
+          <pre>{block}</pre>
+        </div>
+      </div>
+    ));
+  }
+
   return (
     <PageShell
-      eyebrow="QUESTION BANK"
+      eyebrow="QUESTION BANK AGENT"
       title="Practice with purpose."
-      description="Generate and organize questions from your learning material."
+      description="Generate grounded questions from your study material."
     >
       <div className="question-grid">
-        <QuestionCard type="2 MARK" title="Define normalization." />
-        <QuestionCard type="5 MARK" title="Explain the normal forms in DBMS." />
-        <QuestionCard type="10 MARK" title="Discuss normalization with examples." />
+        <div className="question-card">
+          <h3>Question Bank Generator</h3>
+
+          <label>
+            <span>Topic</span>
+            <input
+              type="text"
+              placeholder="Example: Binary Search Tree"
+              value={topic}
+              onChange={(event) => setTopic(event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span>Number of Questions</span>
+            <select
+              value={questionCount}
+              onChange={(event) =>
+                setQuestionCount(event.target.value)
+              }
+            >
+              <option value="1">1</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Difficulty</span>
+            <select
+              value={difficulty}
+              onChange={(event) =>
+                setDifficulty(event.target.value)
+              }
+            >
+              <option value="mixed">Mixed</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="difficult">Difficult</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Question Type</span>
+            <select
+              value={questionType}
+              onChange={(event) =>
+                setQuestionType(event.target.value)
+              }
+            >
+              <option value="mixed">Mixed</option>
+              <option value="MCQ">MCQ</option>
+              <option value="Short Answer">Short Answer</option>
+              <option value="True/False">True/False</option>
+              <option value="Fill in the Blank">
+                Fill in the Blank
+              </option>
+            </select>
+          </label>
+
+          <label>
+  <span>Current Knowledge (Optional)</span>
+  <textarea
+    placeholder="Example: I know basic Python, arrays, and sorting..."
+    value={currentKnowledge}
+    onChange={(event) =>
+      setCurrentKnowledge(event.target.value)
+    }
+    rows={4}
+  />
+</label>
+          <label>
+            <span>Study Material (Optional)</span>
+            <textarea
+              placeholder="Paste your study material here..."
+              value={studyText}
+              onChange={(event) =>
+                setStudyText(event.target.value)
+              }
+              rows={6}
+            />
+          </label>
+
+          <button
+            type="button"
+            className="login-submit"
+            onClick={generateQuestions}
+            disabled={loading}
+          >
+            <span>
+              {loading
+                ? "GENERATING..."
+                : "GENERATE QUESTION BANK"}
+            </span>
+            <b>&gt;</b>
+          </button>
+          
+          <button
+  type="button"
+  className="login-submit"
+  onClick={generatePrerequisites}
+  disabled={prerequisiteLoading}
+>
+  <span>
+    {prerequisiteLoading
+      ? "ANALYZING PREREQUISITES..."
+      : "ANALYZE PREREQUISITES"}
+  </span>
+  <b>&gt;</b>
+</button>
+
+{prerequisiteReport && (
+  <div className="adaptive-result">
+    <h3>Prerequisite Analysis</h3>
+    <pre>{prerequisiteReport}</pre>
+  </div>
+)}
+
+<div className="adaptive-result">
+  <h3>AI Teacher</h3>
+
+  <textarea
+    value={teacherQuestion}
+    onChange={(event) => setTeacherQuestion(event.target.value)}
+    placeholder="Ask the AI Teacher a question..."
+    rows={4}
+  />
+
+  <input
+    type="text"
+    value={studentLevel}
+    onChange={(event) => setStudentLevel(event.target.value)}
+    placeholder="Student level (e.g. Beginner, Intermediate)"
+  />
+
+  <button
+    type="button"
+    onClick={askAITeacher}
+    disabled={teacherLoading}
+  >
+    {teacherLoading ? "TEACHER IS THINKING..." : "ASK AI TEACHER"}
+  </button>
+
+  {teacherAnswer && (
+    <pre>{teacherAnswer}</pre>
+  )}
+</div>
+
+<div className="agent-card">
+  <h3>Voice Teacher</h3>
+
+  <p>
+    Generate a grounded teaching script and hear it as AI voice narration.
+  </p>
+
+  <button
+    onClick={generateVoiceTeacher}
+    disabled={voiceTeacherLoading}
+  >
+    {voiceTeacherLoading
+      ? "GENERATING VOICE TEACHER..."
+      : "START VOICE TEACHER"}
+  </button>
+
+  {voiceTeacherScript && (
+    <div className="adaptive-result">
+      <h3>Voice Teacher Script</h3>
+
+      <pre>{voiceTeacherScript}</pre>
+    </div>
+  )}
+
+  {voiceTeacherAudio && (
+    <div className="adaptive-result">
+      <h3>Teacher Voice</h3>
+
+      <audio
+        controls
+        src={voiceTeacherAudio}
+        style={{ width: "100%" }}
+      >
+        Your browser does not support audio playback.
+      </audio>
+    </div>
+  )}
+</div>
+
+<div className="adaptive-result">
+  <h3>Visual Learning</h3>
+
+  <button
+    type="button"
+    onClick={generateVisualLearning}
+    disabled={visualLearningLoading}
+  >
+    {visualLearningLoading
+      ? "GENERATING VISUAL LEARNING..."
+      : "GENERATE VISUAL LEARNING"}
+  </button>
+
+  {visualLearning && (
+    <pre>{visualLearning}</pre>
+  )}
+</div>
+
+<div className="adaptive-result">
+  <h3>Visual Content</h3>
+
+  <button
+    type="button"
+    onClick={generateVisualContent}
+    disabled={visualContentLoading || !visualLearning}
+  >
+    {visualContentLoading
+      ? "GENERATING VISUAL CONTENT..."
+      : "GENERATE VISUAL CONTENT"}
+  </button>
+
+  {visualContent && (
+    <pre>{visualContent}</pre>
+  )}
+</div>
+
+
+<div className="adaptive-result">
+  <h3>AI Whiteboard</h3>
+
+  <button
+    type="button"
+    onClick={generateWhiteboard}
+    disabled={whiteboardLoading}
+  >
+    {whiteboardLoading
+      ? "GENERATING WHITEBOARD..."
+      : "GENERATE AI WHITEBOARD"}
+  </button>
+
+  {whiteboard && (
+    <pre>{whiteboard}</pre>
+  )}
+</div>
+
+<div className="adaptive-result">
+  <h3>Teaching Video</h3>
+
+  <p>
+    Generate a grounded teaching lesson with AI narration and a
+    playable 2D educational video.
+  </p>
+
+  <button
+    type="button"
+    onClick={generateTeachingVideo}
+    disabled={videoPlanLoading}
+  >
+    {videoPlanLoading
+      ? "GENERATING TEACHING VIDEO..."
+      : "GENERATE TEACHING VIDEO"}
+  </button>
+
+  {videoFile && (
+    <div
+      style={{
+        marginTop: "20px",
+        borderRadius: "18px",
+        overflow: "hidden",
+        background: "#05070b",
+        border: "1px solid rgba(255,255,255,0.08)",
+      }}
+    >
+      <video
+        controls
+        preload="metadata"
+        src={videoFile}
+        style={{
+          width: "100%",
+          display: "block",
+          maxHeight: "620px",
+          background: "#05070b",
+        }}
+      >
+        Your browser does not support video playback.
+      </video>
+    </div>
+  )}
+
+  {videoFile && (
+    <div
+      style={{
+        marginTop: "14px",
+        display: "flex",
+        gap: "10px",
+        flexWrap: "wrap",
+      }}
+    >
+      <span className="question-type">AI TEACHER</span>
+      <span className="question-type">2D ANIMATION</span>
+      <span className="question-type">GROUNDED VIDEO</span>
+    </div>
+  )}
+
+  {videoPlan && (
+    <details style={{ marginTop: "20px" }}>
+      <summary>View Teaching Video Plan</summary>
+      <pre style={{ marginTop: "12px" }}>{videoPlan}</pre>
+    </details>
+  )}
+</div>
+          </div>
+
+      {message && (
+            <div className="login-message">
+              {message}
+            </div>
+          )}
+        </div>
+
+        {questionBank && (
+          <div className="question-card">
+            <h3>Generated Question Bank</h3>
+
+              <button
+                type="button"
+                className="login-submit"
+                onClick={() => {
+                setPracticeMode(true);
+                setStudentAnswers("");
+                setAssessmentReport("");
+                setMessage("");
+              }}
+             >
+              <span>START PRACTICE</span>
+              <b>&gt;</b>
+              </button>
+
+            <div className="question-result">
+              <pre style={{marginTop:"20px",padding:"18px",borderRadius:"14px",background:"rgba(5,8,20,0.72)",border:"1px solid rgba(130,145,255,0.16)",color:"#e8ecff",whiteSpace:"pre-wrap",lineHeight:1.6,overflowX:"auto"}}>{questionBank}</pre>
+                {practiceMode && (
+  <div className="practice-panel">
+    <h3>Practice Mode</h3>
+
+    <p className="muted">
+      Write your answers below, then submit them for assessment.
+    </p>
+
+    <textarea
+      className="practice-answer-input"
+      placeholder="Write your answers here...
+
+Example:
+1. ...
+2. ...
+3. ..."
+      value={studentAnswers}
+      onChange={(event) =>
+        setStudentAnswers(event.target.value)
+      }
+      rows={12}
+    />
+
+    <button
+      type="button"
+      className="login-submit"
+      onClick={submitAssessment}
+      disabled={assessmentLoading}
+    >
+      <span>
+        {assessmentLoading
+          ? "ASSESSING..."
+          : "SUBMIT FOR ASSESSMENT"}
+      </span>
+      <b>&gt;</b>
+    </button>
+
+    {assessmentReport && (
+  <div className="assessment-result">
+    <h3>Assessment Report</h3>
+
+    <pre>{assessmentReport}</pre>
+
+    <button
+      type="button"
+      className="login-submit"
+      onClick={generateAdaptiveLearning}
+      disabled={adaptiveLoading}
+    >
+      <span>
+        {adaptiveLoading
+          ? "ANALYZING..."
+          : "GENERATE ADAPTIVE LEARNING PLAN"}
+      </span>
+      <b>&gt;</b>
+    </button>
+
+
+
+    {adaptiveReport && (
+      <div className="adaptive-result">
+        <h3>Adaptive Learning Plan</h3>
+        <pre>{adaptiveReport}</pre>
       </div>
+    )}
+
+{adaptiveReport && (
+  <>  
+
+    <button
+      type="button"
+      className="login-submit"
+      onClick={generateStudyGuide}
+      disabled={studyGuideLoading}
+    >
+      <span>
+        {studyGuideLoading
+          ? "GENERATING STUDY GUIDE..."
+          : "GENERATE STUDY GUIDE"}
+      </span>
+      <b>&gt;</b>
+    </button>
+
+    {studyGuide && (
+      <div className="adaptive-result">
+        <h3>Study Guide</h3>
+        <pre>{studyGuide}</pre>
+      </div>
+
+    )}
+  </>
+)}
+
+  </div>
+)}
+  </div>
+)}
+            </div>
+          </div>
+        )}
     </PageShell>
   );
 }
-
 function QuestionCard({ type, title }) {
   return (
     <div className="question-card">
@@ -676,70 +1759,16 @@ function ExamPage() {
   );
 }
 
-
-
 function ExamCard({ marks, text }) {
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const generateAnswer = async () => {
-    if (!question.trim()) return;
-    setLoading(true);
-    setAnswer("");
-
-    try {
-      const prompt = question + "`n`nGenerate ONLY the examination answer. Do not write labels such as Answer, Marks, or Explanation. Do not repeat the question. For 2 MARKS: write only 2-3 concise sentences, about 30-50 words, containing the definition and one key point or example. For 5 MARKS: write about 80-120 words with a short introduction, 3-4 key points, explanation, and example. For 10 MARKS: write about 180-250 words with introduction, detailed key points, explanation, examples or applications, and conclusion. Match the depth strictly to the requested marks. Use only information supported by the uploaded study material."
-      const response = await fetch("http://127.0.0.1:8000/api/v1/question", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: prompt, top_k: 5 })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to generate answer.");
-      }
-
-      setAnswer(data.answer || "No answer generated.");
-    } catch (error) {
-      setAnswer(error.message || "Failed to generate answer.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="exam-card">
       <span>{marks}</span>
       <h3>{text}</h3>
-
-      <input
-        type="text"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        placeholder="Enter your question..."
-        className="exam-question-input"
-      />
-
-      <button
-        className="secondary-button"
-        onClick={generateAnswer}
-        disabled={loading || !question.trim()}
-      >
-        {loading ? "Generating..." : "Generate Answer"}
-      </button>
-
-      {answer && (
-        <div className="exam-answer">
-          <strong>AI Answer</strong>
-          <p>{answer}</p>
-        </div>
-      )}
+      <button className="secondary-button">Start practice</button>
     </div>
   );
 }
+
 function PlannerPage() {
   return (
     <PageShell
@@ -793,14 +1822,924 @@ function PageShell({ eyebrow, title, description, children }) {
   );
 }
 
-function App() {
+
+function VirtualTeacherPage() {
+  const [topic, setTopic] = useState("");
+  const [studentLevel, setStudentLevel] = useState("beginner");
+  const [learningGoal, setLearningGoal] = useState("");
+  const [teacherScript, setTeacherScript] = useState("");
+  const [checkQuestion, setCheckQuestion] = useState("");
+  const [studentAnswer, setStudentAnswer] = useState("");
+  const [assessmentReport, setAssessmentReport] = useState("");
+  const [adaptiveReport, setAdaptiveReport] = useState("");
+  const [nextAction, setNextAction] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [answerLoading, setAnswerLoading] = useState(false);
+  const [voiceLoading, setVoiceLoading] = useState(false);
+  const [voiceFile, setVoiceFile] = useState("");
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoFile, setVideoFile] = useState("");
+  const [videoPlan, setVideoPlan] = useState("");
+  const [liveMessages, setLiveMessages] = useState([]);
+  const [liveListening, setLiveListening] = useState(false);
+  const [liveThinking, setLiveThinking] = useState(false);
+  const [liveText, setLiveText] = useState("");
+  const [liveMode, setLiveMode] = useState(false);
+  const [liveError, setLiveError] = useState("");
+  const recognitionRef = useRef(null);
+  const [message, setMessage] = useState("");
+
+  async function startLesson() {
+    if (!topic.trim()) {
+      setMessage("Enter a topic first.");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+    setTeacherScript("");
+    setCheckQuestion("");
+    setStudentAnswer("");
+    setAssessmentReport("");
+    setAdaptiveReport("");
+    setNextAction("");
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/v1/virtual-teacher",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: topic.trim(),
+            student_level: studentLevel,
+            learning_goal: learningGoal.trim(),
+            lesson_context: "",
+            study_text: "",
+            student_answer: "",
+            check_question: "",
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || "Failed to start Virtual Teacher."
+        );
+      }
+
+      setTeacherScript(data.teacher_script || "");
+      setCheckQuestion(data.check_question || "");
+      setNextAction(data.next_action || "");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function speakLesson() {
+  if (!topic.trim()) {
+    setMessage("Start a lesson first.");
+    return;
+  }
+
+  setVoiceLoading(true);
+  setMessage("");
+  setVoiceFile("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/voice-teacher",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          student_level: studentLevel,
+          learning_goal: learningGoal.trim(),
+          lesson_context: "",
+          study_text: "",
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to generate teacher voice."
+      );
+    }
+
+    if (!data.audio_file) {
+      throw new Error(
+        "Voice Teacher did not return an audio file."
+      );
+    }
+
+    setVoiceFile(
+      `http://127.0.0.1:8000${data.audio_file}`
+    );
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setVoiceLoading(false);
+  }
+}
+
+async function generateVirtualTeacherVideo() {
+  if (!topic.trim()) {
+    setMessage("Start a lesson first.");
+    return;
+  }
+
+  setVideoLoading(true);
+  setMessage("");
+  setVideoFile("");
+  setVideoPlan("");
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/teaching-video",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          student_level: studentLevel,
+          learning_goal: learningGoal.trim(),
+          lesson_context: "",
+          study_text: "",
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Failed to generate teaching video."
+      );
+    }
+
+    setVideoPlan(data.video_plan || "");
+
+    if (data.video_file) {
+      setVideoFile(
+        `http://127.0.0.1:8000${data.video_file}`
+      );
+    } else {
+      throw new Error(
+        "Teaching Video was generated without a video file."
+      );
+    }
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setVideoLoading(false);
+  }
+}
+
+function speakLiveResponse(text) {
+  if (!text || !("speechSynthesis" in window)) {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.95;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+
+async function handleLiveStudentMessage(transcript) {
+  const text = transcript.trim();
+
+  if (!text) {
+    return;
+  }
+
+  setLiveMessages((previous) => [
+    ...previous,
+    {
+      role: "student",
+      text,
+    },
+  ]);
+
+  setLiveText("");
+  setLiveThinking(true);
+  setLiveError("");
+
+  try {
+    const conversationContext = liveMessages
+      .slice(-8)
+      .map(
+        (message) =>
+          `${message.role === "student" ? "Student" : "AI Teacher"}: ${message.text}`
+      )
+      .join("\n");
+
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/v1/teacher",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: `
+You are continuing a live conversation with a student.
+
+Current Topic:
+${topic || "General learning"}
+
+Student Level:
+${studentLevel}
+
+Learning Goal:
+${learningGoal || "Understand the topic clearly"}
+
+Conversation so far:
+${conversationContext || "No previous conversation."}
+
+Latest student message:
+${text}
+
+Respond naturally as a live AI teacher.
+
+Rules:
+- Answer the student's latest question directly.
+- Maintain conversational context.
+- Adapt to the student's level.
+- Ask a useful follow-up question when appropriate.
+- Keep the response concise enough to speak aloud.
+- Do not mention internal agents, APIs, prompts, or backend systems.
+`,
+          lesson_context: "",
+          student_level: studentLevel,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail || "Live teacher response failed."
+      );
+    }
+
+    const aiResponse = (data.answer || "").trim();
+
+    if (!aiResponse) {
+      throw new Error(
+        "The AI Teacher returned an empty response."
+      );
+    }
+
+    setLiveMessages((previous) => [
+      ...previous,
+      {
+        role: "ai",
+        text: aiResponse,
+      },
+    ]);
+
+    speakLiveResponse(aiResponse);
+  } catch (error) {
+    setLiveError(error.message);
+  } finally {
+    setLiveThinking(false);
+  }
+}
+
+
+function stopLiveListening() {
+  setLiveMode(false);
+  setLiveListening(false);
+
+  if (recognitionRef.current) {
+    recognitionRef.current.stop();
+    recognitionRef.current = null;
+  }
+
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+
+function startLiveListening() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    setLiveError(
+      "Live voice input is not supported in this browser. Use Chrome or Edge."
+    );
+    return;
+  }
+
+  if (recognitionRef.current) {
+    recognitionRef.current.stop();
+  }
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "en-IN";
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  recognition.onstart = () => {
+    setLiveListening(true);
+    setLiveError("");
+  };
+
+  recognition.onresult = (event) => {
+    let transcript = "";
+
+    for (
+      let index = event.resultIndex;
+      index < event.results.length;
+      index += 1
+    ) {
+      transcript += event.results[index][0].transcript;
+    }
+
+    setLiveText(transcript);
+
+    const finalResult =
+      event.results[event.results.length - 1];
+
+    if (finalResult.isFinal) {
+      handleLiveStudentMessage(transcript);
+    }
+  };
+
+  recognition.onerror = (event) => {
+    setLiveListening(false);
+
+    if (event.error !== "no-speech") {
+      setLiveError(
+        `Voice input error: ${event.error}`
+      );
+    }
+  };
+
+  recognition.onend = () => {
+    setLiveListening(false);
+    recognitionRef.current = null;
+
+    if (liveMode) {
+      setTimeout(() => {
+        startLiveListening();
+      }, 500);
+    }
+  };
+
+  recognitionRef.current = recognition;
+  recognition.start();
+}
+
+
+function toggleLiveConversation() {
+  if (liveMode) {
+    stopLiveListening();
+    return;
+  }
+
+  setLiveMode(true);
+  setLiveError("");
+  startLiveListening();
+}
+
+  async function submitStudentAnswer() {
+    if (!studentAnswer.trim()) {
+      setMessage("Enter your answer first.");
+      return;
+    }
+
+    if (!checkQuestion.trim()) {
+      setMessage("Start a lesson before submitting an answer.");
+      return;
+    }
+
+    setAnswerLoading(true);
+    setMessage("");
+    setAssessmentReport("");
+    setAdaptiveReport("");
+    setNextAction("");
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/v1/virtual-teacher",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: topic.trim(),
+            student_level: studentLevel,
+            learning_goal: learningGoal.trim(),
+            lesson_context: "",
+            study_text: "",
+            student_answer: studentAnswer.trim(),
+            check_question: checkQuestion,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || "Failed to evaluate your answer."
+        );
+      }
+
+      setTeacherScript(data.teacher_script || "");
+      setAssessmentReport(data.assessment_report || "");
+      setAdaptiveReport(data.adaptive_learning_report || "");
+      setNextAction(data.next_action || "");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setAnswerLoading(false);
+    }
+  }
+
+  return (
+    <PageShell
+      eyebrow="VIRTUAL TEACHER"
+      title="Learn with an adaptive AI teacher"
+      description="Your teacher explains, checks your understanding, evaluates your answer, and decides the next learning action."
+    >
+      <div
+        className="virtual-teacher-page"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1.5fr) minmax(280px, 0.8fr)",
+          gap: "20px",
+        }}
+      >
+        <div className="workspace-card">
+          <div className="card-top">
+            <span className="eyebrow">LIVE LESSON</span>
+            <span className="live-dot">AI</span>
+          </div>
+
+          <div style={{ display: "grid", gap: "14px", marginTop: "18px" }}>
+            <input
+              className="text-input"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="What do you want to learn?"
+            />
+
+            <select
+              className="text-input"
+              value={studentLevel}
+              onChange={(e) => setStudentLevel(e.target.value)}
+            >
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+
+            <input
+              className="text-input"
+              value={learningGoal}
+              onChange={(e) => setLearningGoal(e.target.value)}
+              placeholder="Learning goal (optional)"
+            />
+
+           <button
+  className="secondary-button"
+  onClick={speakLesson}
+  disabled={voiceLoading || !topic.trim()}
+  style={{ marginTop: "10px" }}
+>
+  {voiceLoading ? "GENERATING VOICE..." : "SPEAK LESSON"}
+</button>
+
+            <button
+              className="primary-button live-start-button"
+              onClick={startLesson}
+              disabled={loading}
+            >
+              {loading ? "STARTING LESSON..." : "START VIRTUAL LESSON"}
+            </button>
+          </div>
+         
+          <button
+  className="secondary-button"
+  onClick={generateVirtualTeacherVideo}
+  disabled={videoLoading || !topic.trim()}
+  style={{ marginTop: "10px" }}
+>
+  {videoLoading
+    ? "GENERATING TEACHING VIDEO..."
+    : "WATCH TEACHING VIDEO"}
+</button>
+
+{videoFile && (
+  <div
+    className="workspace-card"
+    style={{ marginTop: "16px" }}
+  >
+    <span className="eyebrow">AI TEACHING VIDEO</span>
+
+    <video
+      controls
+      preload="metadata"
+      src={videoFile}
+      style={{
+        width: "100%",
+        display: "block",
+        marginTop: "12px",
+        maxHeight: "520px",
+        background: "#05070b",
+      }}
+    >
+      Your browser does not support video playback.
+    </video>
+  </div>
+)}
+
+{videoPlan && (
+  <details style={{ marginTop: "14px" }}>
+    <summary>View Teaching Video Plan</summary>
+    <pre
+      style={{
+        marginTop: "10px",
+        whiteSpace: "pre-wrap",
+        lineHeight: 1.6,
+        fontFamily: "inherit",
+      }}
+    >
+      {videoPlan}
+    </pre>
+  </details>
+)}  
+
+{voiceFile && (
+  <div
+    className="workspace-card"
+    style={{ marginTop: "14px" }}
+  >
+    <span className="eyebrow">VOICE TEACHER</span>
+
+    <audio
+      controls
+      preload="metadata"
+      src={voiceFile}
+      style={{
+        width: "100%",
+        marginTop: "12px",
+      }}
+    >
+      Your browser does not support audio playback.
+    </audio>
+  </div>
+)} 
+ 
+          {teacherScript && (
+            <div
+              className="adaptive-result"
+              style={{ marginTop: "24px" }}
+            >
+              <h3>AI Teacher</h3>
+              <pre
+                style={{
+                  whiteSpace: "pre-wrap",
+                  lineHeight: 1.7,
+                  fontFamily: "inherit",
+
+                }}
+              >
+                {teacherScript}
+              </pre>
+            </div>
+          )}
+
+          {checkQuestion && !assessmentReport && (
+            <div
+              className="workspace-card"
+              style={{ marginTop: "18px" }}
+            >
+              <span className="eyebrow">CHECK YOUR UNDERSTANDING</span>
+
+              <h3 style={{ marginTop: "10px" }}>
+                {checkQuestion}
+              </h3>
+
+              <textarea
+                className="text-input"
+                rows="5"
+                value={studentAnswer}
+                onChange={(e) => setStudentAnswer(e.target.value)}
+                placeholder="Write your answer here..."
+                style={{
+                  marginTop: "14px",
+                  width: "100%",
+                  resize: "vertical",
+                }}
+              />
+
+              <button
+                className="primary-button"
+                onClick={submitStudentAnswer}
+                disabled={answerLoading}
+                style={{ marginTop: "12px" }}
+              >
+                {answerLoading
+                  ? "EVALUATING..."
+                  : "SUBMIT ANSWER"}
+              </button>
+            </div>
+          )}
+
+          {assessmentReport && (
+            <div
+              className="adaptive-result"
+              style={{ marginTop: "18px" }}
+            >
+              <h3>Assessment</h3>
+              <pre
+                style={{
+                  whiteSpace: "pre-wrap",
+                  lineHeight: 1.6,
+                  fontFamily: "inherit",
+                }}
+              >
+                {assessmentReport}
+              </pre>
+            </div>
+          )}
+
+          {adaptiveReport && (
+            <div
+              className="adaptive-result"
+              style={{ marginTop: "18px" }}
+            >
+              <h3>Adaptive Learning</h3>
+              <pre
+                style={{
+                  whiteSpace: "pre-wrap",
+                  lineHeight: 1.6,
+                  fontFamily: "inherit",
+                }}
+              >
+                {adaptiveReport}
+              </pre>
+            </div>
+          )}
+        </div>
+
+        <div style={{ display: "grid", gap: "18px" }}>
+          <div className="workspace-card">
+            <span className="eyebrow">NEXT ACTION</span>
+
+            <h3 style={{ marginTop: "10px" }}>
+              {nextAction || "Start a lesson to begin."}
+            </h3>
+
+            <p className="muted" style={{ marginTop: "10px" }}>
+              The next step is determined from the student's
+              demonstrated performance.
+            </p>
+          </div>
+
+          <div className="workspace-card">
+            <span className="eyebrow">LEARNING LOOP</span>
+
+            <p style={{ lineHeight: 1.8, marginTop: "12px" }}>
+              Teach
+              <br />
+              ?
+              <br />
+              Check
+              <br />
+              ?
+              <br />
+              Assess
+              <br />
+              ?
+              <br />
+              Adapt
+              <br />
+              ?
+              <br />
+              Continue / Reteach / Practice / Retest
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div
+  className="workspace-card"
+  style={{ marginTop: "20px" }}
+>
+  <div
+    className="card-top"
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "12px",
+    }}
+  >
+    <span className="eyebrow">LIVE CONVERSATION</span>
+
+    <span
+      className="live-dot"
+      style={{
+        opacity: liveMode ? 1 : 0.65,
+      }}
+    >
+      {liveMode ? "LIVE" : "READY"}
+    </span>
+  </div>
+
+  <h3 style={{ marginTop: "12px" }}>
+    Talk directly with your AI Teacher
+  </h3>
+
+  <p className="muted">
+    Speak naturally. The teacher listens, responds, and continues
+    the conversation.
+  </p>
+
+  <div
+    style={{
+      minHeight: "180px",
+      maxHeight: "320px",
+      overflowY: "auto",
+      marginTop: "16px",
+      padding: "14px",
+      borderRadius: "14px",
+      background: "rgba(255,255,255,0.03)",
+      border: "1px solid rgba(255,255,255,0.08)",
+    }}
+  >
+    {liveMessages.length === 0 && (
+      <div className="muted">
+        Start the conversation and ask your teacher anything.
+      </div>
+    )}
+
+    {liveMessages.map((messageItem, index) => (
+      <div
+        key={`${messageItem.role}-${index}`}
+        style={{
+          marginBottom: "14px",
+          textAlign:
+            messageItem.role === "student"
+              ? "right"
+              : "left",
+        }}
+      >
+        <div
+          className="eyebrow"
+          style={{
+            marginBottom: "5px",
+          }}
+        >
+          {messageItem.role === "student"
+            ? "YOU"
+            : "AI TEACHER"}
+        </div>
+
+        <div
+          style={{
+            display: "inline-block",
+            maxWidth: "88%",
+            padding: "10px 13px",
+            borderRadius: "12px",
+            lineHeight: 1.55,
+            background:
+              messageItem.role === "student"
+                ? "rgba(255,255,255,0.08)"
+                : "rgba(80,120,255,0.12)",
+          }}
+        >
+          {messageItem.text}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {liveText && (
+    <div
+      className="muted"
+      style={{
+        marginTop: "12px",
+        fontStyle: "italic",
+      }}
+    >
+      Listening: {liveText}
+    </div>
+  )}
+
+  {liveThinking && (
+    <div
+      className="muted"
+      style={{ marginTop: "10px" }}
+    >
+      AI Teacher is thinking...
+    </div>
+  )}
+
+  <div
+    style={{
+      display: "flex",
+      gap: "10px",
+      marginTop: "16px",
+      flexWrap: "wrap",
+    }}
+  >
+  <div className="live-conversation-actions">
+  <button
+    className="live-start-button"
+    style={{minWidth:"180px",minHeight:"50px",padding:"0 22px",border:"1px solid rgba(140,165,255,0.65)",borderRadius:"15px",background:"linear-gradient(135deg,#6b3cff 0%,#4d74ff 55%,#2fcfff 100%)",color:"#fff",fontWeight:800,letterSpacing:"0.04em",boxShadow:"0 12px 30px rgba(82,75,255,0.28)",cursor:"pointer"}}
+    onClick={toggleLiveConversation}
+    disabled={liveThinking}
+  >
+    <span className="live-mic-dot" />
+    {liveListening
+      ? "STOP LISTENING"
+      : liveMode
+      ? "END LIVE CHAT"
+      : "START LIVE CHAT"}
+  </button>
+
+  <button
+    className="live-clear-button"
+    style={{minWidth:"120px",minHeight:"50px",padding:"0 18px",border:"1px solid rgba(150,160,210,0.22)",borderRadius:"15px",background:"rgba(24,29,58,0.88)",color:"#dfe5ff",fontWeight:700,letterSpacing:"0.03em",boxShadow:"0 10px 24px rgba(0,0,0,0.22)",cursor:"pointer"}}
+    onClick={() => {
+      setLiveMessages([]);
+      setLiveText("");
+      setLiveError("");
+    }}
+    disabled={liveThinking || liveListening}
+  >
+    CLEAR CHAT
+  </button>
+  </div>
+
+  {liveError && (
+    <div
+      className="guide-error"
+      style={{ marginTop: "12px" }}
+    >
+      {liveError}
+    </div>
+  )}
+</div>
+
+      </div>
+
+      {message && (
+        <div
+          className="guide-error"
+          style={{ marginTop: "18px" }}
+        >
+          {message}
+        </div>
+      )}
+    </PageShell>
+  );
+}
+
+function App({ user }) {
   const [showWorkspace, setShowWorkspace] = useState(false);
   const [activePage, setActivePage] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [isLightMode, setIsLightMode] = useState(false);
 
+  const toggleTheme = () => {
+    setIsLightMode((prev) => !prev);
+  };
+
   if (!showWorkspace) {
-    return <LandingPage onEnterWorkspace={() => setShowWorkspace(true)} />;
+    return <LandingPage onEnterWorkspace={() => setShowWorkspace(true)} isLightMode={isLightMode} toggleTheme={toggleTheme} />;
   }
 
   const activeMenu = menuItems.find((item) => item.id === activePage);
@@ -809,6 +2748,8 @@ function App() {
     switch (activePage) {
       case "guide":
         return <GuidePage />;
+      case "virtual-teacher":
+        return <VirtualTeacherPage />;
       case "documents":
         return <DocumentsPage />;
       case "questions":
@@ -821,6 +2762,10 @@ function App() {
         return <ExamPage />;
       case "planner":
         return <PlannerPage />;
+      case "verified-reasoning":
+        return <VerifiedReasoningPage isLightMode={isLightMode} />;
+      case "synthetic-peer":
+        return <SyntheticPeerClassroomPage />;
       default:
         return <Overview setActivePage={setActivePage} />;
     }
@@ -883,10 +2828,16 @@ function App() {
             <strong>{activeMenu?.label}</strong>
           </div>
 
-          <div className="topbar-user">
-            <button className="theme-toggle" onClick={() => setIsLightMode(prev => !prev)} aria-label="Toggle theme"><span className="theme-icon"></span></button>
+          <div className="topbar-user"><button type="button" className="secondary-button" onClick={toggleTheme} aria-label="Toggle theme">{isLightMode ? "☀️" : "🌙"}</button>
             <span className="grounded-badge">GROUNDED</span>
-            <div className="avatar">SK</div>
+            <div className="avatar">{(user?.email || "SK").slice(0, 2).toUpperCase()}</div>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => supabase.auth.signOut()}
+            >
+              Logout
+            </button>
           </div>
         </header>
 
@@ -897,9 +2848,6 @@ function App() {
 }
 
 export default App;
-
-
-
 
 
 

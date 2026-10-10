@@ -1,17 +1,29 @@
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *.pyo
+.pytest_cache/
+**/.pytest_cache/
 
 # Virtual Environment
 .venv/
 venv/
 env/
 
-# Environment Variables
+# Environment Variables & Secrets
 .env
-.env.*
+.env*
+**/.env
+**/.env*
 !.env.example
+!**/.env.example
+
+# Frontend build & packages
+node_modules/
+**/node_modules/
+dist/
+**/dist/
 
 # IDE
 .vscode/
@@ -23,12 +35,33 @@ Thumbs.db
 
 # Logs
 *.log
-# Generated uploads
+**/*.log
+
+# Generated uploads & media
 uploads/
+**/uploads/
+backend/video_frames_2d/
+video_frames_2d/
+backend/teaching_video_frames/
+teaching_video_frames/
+backend/generated_audio/
+generated_audio/
+backend/generated_videos/
+generated_videos/
+*.wav
+*.mp3
+*.mp4
+*.blend
+*.blend1
 
 # Local test PDFs
 backend/tests/*.pdf
 backend/tests/*.txt
 
 # Local backup files
+*.bak
+*.bak.*
+*.*bak*
+*backup*
+*-backup*
 *.backup.*

@@ -1,7 +1,7 @@
-from backend.app.models.chunk_model import DocumentChunk
-from backend.app.models.rag_model import RAGResponse, SourceCitation
-from backend.app.services.generation_service import generate_answer
-from backend.app.services.retrieval_service import retrieve_relevant_chunks
+from app.models.chunk_model import DocumentChunk
+from app.models.rag_model import RAGResponse, SourceCitation
+from app.services.generation_service import generate_answer
+from app.services.retrieval_service import retrieve_relevant_chunks
 
 
 def answer_question(
@@ -78,3 +78,4 @@ def answer_question_with_citations(
         answer=answer,
         citations=citations
     )
+

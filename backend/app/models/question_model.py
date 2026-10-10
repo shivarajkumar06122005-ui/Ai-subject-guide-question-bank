@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.app.models.citation_model import SourceCitation
+from app.models.citation_model import SourceCitation
 
 
 class QuestionRequest(BaseModel):
@@ -12,3 +12,4 @@ class QuestionResponse(BaseModel):
     question: str
     answer: str
     citations: list[SourceCitation] = []
+

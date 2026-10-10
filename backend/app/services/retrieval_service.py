@@ -1,7 +1,7 @@
 from math import sqrt
 
-from backend.app.models.chunk_model import DocumentChunk
-from backend.app.services.embedding_service import create_embedding
+from app.models.chunk_model import DocumentChunk
+from app.services.embedding_service import create_embedding
 
 
 def cosine_similarity(
@@ -65,3 +65,4 @@ def retrieve_relevant_chunks(
         chunk
         for _, chunk in scored_chunks[:top_k]
     ]
+

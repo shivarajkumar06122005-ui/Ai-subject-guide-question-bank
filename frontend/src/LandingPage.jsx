@@ -1,8 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-function LandingPage({ onEnterWorkspace }) {
-  const [isLightMode, setIsLightMode] = useState(false);
-  const [showDemo, setShowDemo] = useState(false);
+function LandingPage({ onEnterWorkspace, isLightMode, toggleTheme }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -65,36 +63,11 @@ function LandingPage({ onEnterWorkspace }) {
 
     window.addEventListener("resize", resize);
 
-
-
-  return () => {
+    return () => {
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrame);
     };
   }, []);
-
-  if (showDemo) {
-    return (
-      <div className={`landing-page demo-screen ${isLightMode ? "light-mode" : ""}`}>
-        <div className="demo-header">
-          <strong>SUBJECT GUIDE AI</strong>
-        </div>
-        <main className="demo-content">
-          <span className="activation-pill">
-            <span className="status-dot" /> DEMO MODE � LIVE PREVIEW
-          </span>
-          <h1>Experience the AI Teacher</h1>
-          <p>Upload your study material, ask a question, and see how grounded learning works.</p>
-          <div className="demo-grid">
-            <div className="demo-card"><strong>1</strong><span>Upload Notes</span><small>Add your PDF or study material.</small></div>
-            <div className="demo-card"><strong>2</strong><span>Ask Anything</span><small>Ask questions from your material.</small></div>
-            <div className="demo-card"><strong>3</strong><span>Get Grounded Answers</span><small>Answers stay connected to your sources.</small></div>
-          </div>
-          <button className="landing-primary-button demo-enter-button" onClick={onEnterWorkspace}>Try the Full Workspace ?</button>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div className={`landing-page ${isLightMode ? "light-mode" : ""}`}>
@@ -123,12 +96,15 @@ function LandingPage({ onEnterWorkspace }) {
           <a href="#question-bank">Question Bank</a>
         </div>
 
-        <div className="landing-nav-actions"><button className="landing-theme-toggle" onClick={() => setIsLightMode(prev => !prev)} aria-label="Toggle theme"><span className="landing-theme-icon"></span></button>
-          <button className="demo-pill" onClick={() => setShowDemo(true)}>
-            <span />
-            DEMO MODE
+        <div className="landing-nav-actions">
+                    <button
+            type="button"
+            className="landing-theme-button"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            <span className="landing-theme-icon" />
           </button>
-          <br/>
 
           <button
             className="landing-enter-button"
@@ -142,7 +118,7 @@ function LandingPage({ onEnterWorkspace }) {
       <main className="landing-hero" id="workspace">
         <div className="activation-pill">
           <span className="status-dot" />
-          AI KNOWLEDGE CORE · ONLINE
+          AI KNOWLEDGE CORE Â· ONLINE
         </div>
 
         <div className="landing-core">
@@ -184,7 +160,7 @@ function LandingPage({ onEnterWorkspace }) {
             onClick={onEnterWorkspace}
           >
             Enter AI Workspace
-            <span>→</span>
+            <span>â†’</span>
           </button>
 
           <a
@@ -275,21 +251,21 @@ function LandingPage({ onEnterWorkspace }) {
             <strong>What is C?</strong>
           </div>
 
-          <span>→</span>
+          <span>â†’</span>
 
           <div>
             <span>RETRIEVE</span>
             <strong>Study material</strong>
           </div>
 
-          <span>→</span>
+          <span>â†’</span>
 
           <div>
             <span>GENERATE</span>
             <strong>Grounded response</strong>
           </div>
 
-          <span>→</span>
+          <span>â†’</span>
 
           <div>
             <span>CITE</span>
@@ -315,7 +291,7 @@ function LandingPage({ onEnterWorkspace }) {
           onClick={onEnterWorkspace}
         >
           Enter Workspace
-          <span>→</span>
+          <span>â†’</span>
         </button>
       </section>
     </div>
@@ -323,18 +299,5 @@ function LandingPage({ onEnterWorkspace }) {
 }
 
 export default LandingPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

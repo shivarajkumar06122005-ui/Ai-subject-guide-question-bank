@@ -3,8 +3,8 @@ from pathlib import Path
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from backend.app.models.chunk_model import DocumentChunk
-from backend.app.models.document_result import DocumentResult
+from app.models.chunk_model import DocumentChunk
+from app.models.document_result import DocumentResult
 
 
 def get_file_extension(file_path: str) -> str:
@@ -131,3 +131,4 @@ def list_uploaded_documents(upload_dir: str) -> list[dict]:
             })
 
     return documents
+
