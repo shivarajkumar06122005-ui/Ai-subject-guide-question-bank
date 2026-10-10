@@ -1,5 +1,21 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
+
+async function getAuthenticatedHeaders() {
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
+
+  if (error || !session?.access_token) {
+    throw new Error("Please log in again to continue the peer classroom.");
+  }
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${session.access_token}`,
+  };
+}
 
 function SyntheticPeerClassroomPage() {
   const [topic, setTopic] = useState("");
@@ -133,9 +149,7 @@ function SyntheticPeerClassroomPage() {
         "http://127.0.0.1:8000/api/v1/synthetic-peer/followup",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: await getAuthenticatedHeaders(),
           body: JSON.stringify({
             topic: topic.trim(),
             student_response: studentResponse.trim(),
@@ -188,9 +202,7 @@ function SyntheticPeerClassroomPage() {
         "http://127.0.0.1:8000/api/v1/synthetic-peer/misconception",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: await getAuthenticatedHeaders(),
           body: JSON.stringify({
             topic: topic.trim(),
             student_response: studentResponse.trim(),
@@ -234,9 +246,7 @@ function SyntheticPeerClassroomPage() {
         "http://127.0.0.1:8000/api/v1/synthetic-peer/confidence",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: await getAuthenticatedHeaders(),
           body: JSON.stringify({
             topic: topic.trim(),
             student_response: studentResponse.trim(),
@@ -281,9 +291,7 @@ function SyntheticPeerClassroomPage() {
         "http://127.0.0.1:8000/api/v1/synthetic-peer/agreement",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: await getAuthenticatedHeaders(),
           body: JSON.stringify({
             topic: topic.trim(),
             peer_discussion:
@@ -329,9 +337,7 @@ function SyntheticPeerClassroomPage() {
         "http://127.0.0.1:8000/api/v1/synthetic-peer/debate",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: await getAuthenticatedHeaders(),
           body: JSON.stringify({
             topic: topic.trim(),
             revised_claim: revisedClaim.trim(),
@@ -377,9 +383,7 @@ function SyntheticPeerClassroomPage() {
         "http://127.0.0.1:8000/api/v1/synthetic-peer/summary",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: await getAuthenticatedHeaders(),
           body: JSON.stringify({
             topic: topic.trim(),
             study_context: studyContext.trim(),

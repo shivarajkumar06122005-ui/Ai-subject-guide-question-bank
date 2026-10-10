@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from supabase import Client
 
@@ -87,6 +87,7 @@ class SyntheticPeerFollowupResponse(BaseModel):
 @router.post("/followup", response_model=SyntheticPeerFollowupResponse)
 def continue_synthetic_peer_classroom(
     request: SyntheticPeerFollowupRequest,
+    current_user: dict[str, str] = Depends(get_current_user),
 ):
     result = continue_synthetic_peer_discussion(
         topic=request.topic,
@@ -129,6 +130,7 @@ class SyntheticPeerMisconceptionResponse(BaseModel):
 )
 def analyze_synthetic_peer_misconception(
     request: SyntheticPeerMisconceptionRequest,
+    current_user: dict[str, str] = Depends(get_current_user),
 ):
     result = detect_peer_misconception(
         topic=request.topic,
@@ -173,6 +175,7 @@ class SyntheticPeerConfidenceResponse(BaseModel):
 )
 def analyze_synthetic_peer_confidence(
     request: SyntheticPeerConfidenceRequest,
+    current_user: dict[str, str] = Depends(get_current_user),
 ):
     result = analyze_peer_confidence(
         topic=request.topic,
@@ -226,6 +229,7 @@ class SyntheticPeerAgreementResponse(BaseModel):
 )
 def analyze_synthetic_peer_agreement(
     request: SyntheticPeerAgreementRequest,
+    current_user: dict[str, str] = Depends(get_current_user),
 ):
     result = analyze_peer_agreement(
         topic=request.topic,
@@ -265,6 +269,7 @@ class SyntheticPeerDebateResponse(BaseModel):
 )
 def analyze_synthetic_peer_debate(
     request: SyntheticPeerDebateRequest,
+    current_user: dict[str, str] = Depends(get_current_user),
 ):
     result = run_peer_debate(
         topic=request.topic,
@@ -312,6 +317,7 @@ class SyntheticPeerSummaryResponse(BaseModel):
 )
 def summarize_synthetic_peer_classroom(
     request: SyntheticPeerSummaryRequest,
+    current_user: dict[str, str] = Depends(get_current_user),
 ):
     result = summarize_peer_classroom(
         topic=request.topic,
