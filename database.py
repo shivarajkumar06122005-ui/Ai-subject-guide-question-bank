@@ -6,7 +6,6 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     
-    # Users table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             email TEXT PRIMARY KEY,
@@ -18,13 +17,13 @@ def init_db():
         )
     """)
     
-    # Study progress table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS study_activity (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT,
             unit_id TEXT,
-            status TEXT,
+            score REAL,
+            passed BOOLEAN,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(email) REFERENCES users(email)
         )
@@ -63,13 +62,31 @@ def get_user_profile(email: str):
         }
     return None
 
-def update_user_progress(email: str, tokens_to_add: int):
+def log_quiz_attempt(email: str, unit_id: str, score: float, passed: bool, tokens_to_add: int):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
+    
+    # Log the quiz result
     cursor.execute("""
-        UPDATE users 
-        SET tokens = tokens + ?, streak = streak + 1 
-        WHERE email = ?
-    """, (tokens_to_add, email))
+        INSERT INTO study_activity (email, unit_id, score, passed)
+        VALUES (?, ?, ?, ?)
+    """, (email, unit_id, score, passed))
+    
+    # If passed, update tokens and streak
+    if passed:
+        cursor.execute("""
+            UPDATE users 
+            SET tokens = tokens + ?, streak = streak + 1 
+            WHERE email = ?
+        """, (tokens_to_add, email))
+        
     conn.commit()
     conn.close()
+
+def get_user_activity(email: str):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT unit_id, score, passed, timestamp FROM study_activity WHERE email = ?", (email,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"unit_id": r[0], "score": r[1], "passed": bool(r[2]), "timestamp": r[3]} for r in rows]

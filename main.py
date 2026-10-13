@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from models import StudentProfile, QuizSubmission
 from rag_engine import MCODERAGEngine
-from database import init_db, save_user_profile, get_user_profile, update_user_progress
+from database import init_db, save_user_profile, get_user_profile, log_quiz_attempt, get_user_activity
 import shutil
 import os
 import PyPDF2
@@ -17,7 +17,7 @@ def create_profile(profile: StudentProfile):
     save_user_profile(profile.email, profile.full_name, profile.academic_level, profile.department)
     return {
         "status": "success",
-        "message": f"Welcome to MCODE, {profile.full_name}! Profile saved to database.",
+        "message": f"Welcome to MCODE, {profile.full_name}!",
         "profile": profile
     }
 
@@ -27,6 +27,11 @@ def get_profile(email: str):
     if not user:
         raise HTTPException(status_code=404, detail="Student profile not found.")
     return {"status": "success", "profile": user}
+
+@app.get("/api/student/{email}/activity")
+def get_activity(email: str):
+    activity = get_user_activity(email)
+    return {"status": "success", "activity_history": activity}
 
 @app.post("/api/pathway/generate")
 async def generate_pathway(
@@ -68,14 +73,13 @@ def get_gateway_quiz(unit_topic: str):
 
 @app.post("/api/quiz/submit")
 def evaluate_quiz(submission: QuizSubmission):
-    # Mock grading: evaluating if submission is valid
+    # Mock scoring evaluation
     score_percentage = 60.0 
     passed = score_percentage >= 40.0
     tokens_earned = 50 if passed else 0
     
-    # If passed, update tokens and streak in database using user_id as email
-    if passed:
-        update_user_progress(submission.user_id, tokens_earned)
+    # Save quiz attempt permanently into SQLite database
+    log_quiz_attempt(submission.user_id, submission.unit_id, score_percentage, passed, tokens_earned)
     
     return {
         "user_id": submission.user_id,
@@ -83,5 +87,5 @@ def evaluate_quiz(submission: QuizSubmission):
         "score_percentage": score_percentage,
         "passed": passed,
         "tokens_earned": tokens_earned,
-        "message": "Gateway unlocked successfully! Tokens and streak updated." if passed else "Score too low. Try again."
+        "message": "Quiz attempt logged and progress saved to database!"
     }
