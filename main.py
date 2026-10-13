@@ -3,6 +3,7 @@ from models import StudentProfile, QuizSubmission
 from rag_engine import MCODERAGEngine
 import shutil
 import os
+import PyPDF2
 
 app = FastAPI(title="MCODE Backend Study Engine", version="1.0.0")
 
@@ -25,9 +26,17 @@ async def generate_pathway(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(syllabus_file.file, buffer)
         
-    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-        syllabus_text = f.read()
-        
+    # Extract text correctly based on file type
+    syllabus_text = ""
+    if syllabus_file.filename.endswith('.pdf'):
+        with open(file_path, "rb") as f:
+            reader = PyPDF2.PdfReader(f)
+            for page in reader.pages:
+                syllabus_text += page.extract_text() or ""
+    else:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            syllabus_text = f.read()
+            
     pathway_result = MCODERAGEngine.process_syllabus_and_generate_pathway(department, syllabus_text)
     
     return {
